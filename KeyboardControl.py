@@ -1,7 +1,5 @@
 from djitellopy import tello
 import KeyboardModule as kb
-from threading import Thread
-import time
 from time import sleep
 import cv2
 
@@ -9,24 +7,7 @@ kb.init()
 me = tello.Tello()
 me.connect()
 print(me.get_battery())
-keepRecording = True
-me.stream_on()
-frame_read = me.get_frame_read()
 
-def videoRecorder():
-    # create a VideoWrite object, recoring to ./video.avi
-    height, width, _ = frame_read.frame.shape
-    video = cv2.VideoWriter('video.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
-
-    while keepRecording:
-        video.write(frame_read.frame)
-        time.sleep(1 / 30)
-
-    video.release()
-# we need to run the recorder in a seperate thread, otherwise blocking options
-# would prevent frames from getting added to the video
-recorder = Thread(target=videoRecorder)
-recorder.start()
 
 def getKeyInput():
     lr, fb, ud, yv = 0, 0, 0, 0
@@ -67,5 +48,3 @@ while True:
     me.send_rc_control(vals[0], vals[1], vals[2], vals[3])
     sleep(0.05)
 
-keepRecording = False
-recorder.join()

@@ -91,8 +91,9 @@ while True:
 
     img = np.zeros((500, 500, 3), np.uint8)
 
-    if points[-1][0] != vals[4] or points[-1][1] != vals[5]:
-        points.append([vals[4], vals[5]])
+    if points[0][0] != vals[4] or points[0][1] != vals[5]:
+        print(vals[4], vals[5])
+        points.append((vals[4], vals[5]))
     drawPoints(img, points)
     cv2.imshow("Output", img)
     cv2.waitKey(1)

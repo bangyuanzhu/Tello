@@ -25,8 +25,7 @@ def videoRecorder():
     video.release()
 # we need to run the recorder in a seperate thread, otherwise blocking options
 # would prevent frames from getting added to the video
-recorder = Thread(target=videoRecorder)
-recorder.start()
+
 
 def getKeyInput():
     lr, fb, ud, yv = 0, 0, 0, 0
@@ -61,6 +60,8 @@ def getKeyInput():
 
 
 me.takeoff()
+recorder = Thread(target=videoRecorder)
+recorder.start()
 
 while True:
     vals = getKeyInput()

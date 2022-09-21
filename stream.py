@@ -1,12 +1,14 @@
 import cv2
 from djitellopy import tello
 import cvzone
+import KeyboardModule as kb
+from time import sleep
 
 thres = 0.55
 nmsThres = 0.2
- cap = cv2.VideoCapture(0)
- cap.set(3, 640)
- cap.set(4, 480)
+ #cap = cv2.VideoCapture(0)
+ #cap.set(3, 640)
+ #cap.set(4, 480)
 
 classNames = []
 classFile = 'coco.names'
@@ -23,19 +25,53 @@ net.setInputScale(1.0 / 127.5)
 net.setInputMean((127.5, 127.5, 127.5))
 net.setInputSwapRB(True)
 
-#me = tello.Tello()
-#me.connect()
-#print(me.get_battery())
-#me.streamoff()
-#me.streamon()
+kb.init()
+me = tello.Tello()
+me.connect()
+print(me.get_battery())
+me.streamoff()
+me.streamon()
 
 #me.takeoff()
 #me.move_up(80)
 
+def getKeyInput():
+    lr, fb, ud, yv = 0, 0, 0, 0
+    speed = 40
+    if kb.getKey("LEFT"):
+        lr = -speed
+    elif kb.getKey("RIGHT"):
+        lr = speed
+
+    if kb.getKey("UP"):
+        fb = speed
+    elif kb.getKey("DOWN"):
+        fb = -speed
+
+    if kb.getKey("w"):
+        ud = speed
+    elif kb.getKey("s"):
+        ud = -speed
+
+    if kb.getKey("a"):
+        yv = speed
+    elif kb.getKey("d"):
+        yv = -speed
+
+    if kb.getKey("q"):
+        me.land()
+
+    if kb.getKey("e"):
+        me.takeoff()
+
+    return [lr, fb, ud, yv]
+
 
 while True:
-     success, img = cap.read()
-    #img = me.get_frame_read().frame
+     #success, img = cap.read()
+    vals = getKeyInput()
+    me.send_rc_control(vals[0], vals[1], vals[2], vals[3])
+    img = me.get_frame_read().frame
     classIds, confs, bbox = net.detect(img, confThreshold=thres, nmsThreshold=nmsThres)
     try:
         for classId, conf, box in zip(classIds.flatten(), confs.flatten(), bbox):
@@ -45,8 +81,5 @@ while True:
                         1, (0, 255, 0), 2)
     except:
         pass
-
-    me.send_rc_control(0, 0, 0, 0)
-
     cv2.imshow("Image", img)
     cv2.waitKey(1)

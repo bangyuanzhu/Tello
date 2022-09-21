@@ -7,15 +7,15 @@ import math
 
 ##### PARAMETERS ######
 fspeed = 117 / 10  # Self determine speed in cm/s - 15cm/s
-aspeed = 360 / 10  # Angular speed in Degrees/s
+aspeed = 10        # Angular speed in Rad/s
 interval = 0.15
-turn = 5
 dInterval = fspeed * interval
 aInterval = aspeed * interval
 x, y = 500, 500
 a = 0
+b = 0
 yaw = 0
-cirx, ciry = 0, -10
+cirx, ciry = 500, 500
 kb.init()
 me = tello.Tello()
 #me.connect()
@@ -28,28 +28,28 @@ def getKeyInput():
     lr, fb, ud, yv = 0, 0, 0, 0
     speed = 20
     aspeed = 20
-    global x, y, yaw, a, cirx, ciry
+    global x, y, yaw, a, b, cirx, ciry
     d = 0
 
     if kb.getKey("LEFT"):
         lr = -speed
         d = dInterval
-        a = -180
+        a = 180
 
     elif kb.getKey("RIGHT"):
         lr = speed
         d = -dInterval
-        a = 180
+        a = -180
 
     if kb.getKey("UP"):
         fb = speed
         d = dInterval
-        a = 270
+        a = -90
 
     elif kb.getKey("DOWN"):
         fb = -speed
         d = -dInterval
-        a = -90
+        a = 270
 
     if kb.getKey("w"):
         ud = speed
@@ -73,34 +73,29 @@ def getKeyInput():
         #me.takeoff()
 
     a += yaw
-    x += int(d * math.cos(math.radians(a)))
-    y += int(d * math.sin(math.radians(a)))
-    cirx = x - 20*int(math.cos(math.radians(a)))
-    ciry = y - 20*int(math.sin(math.radians(a)))
+    x += math.floor(d * math.cos(math.radians(a)))
+    y += math.floor(d * math.sin(math.radians(a)))
     return [lr, fb, ud, yv, x, y]
 
 
-def Circlearrow(x, y, turn):
-    if kb.getKey("LEFT") and turn != 0:
-        x = x - 10
-        turn = 0
-    elif kb.getKey("RIGHT") and turn != 1:
-        x = x + 10
-        turn = 1
+def Circlearrow():
+    global cirx, ciry, a, b
 
-    if kb.getKey("UP") and turn != 2:
-        y = y - 10
-        turn = 2
-    elif kb.getKey("DOWN") and turn != 3:
-        y = y + 10
-        turn = 3
+    if kb.getKey("a"):
+        b -= 1.5
 
-    return (x, y)
+    elif kb.getKey("d"):
+        b += 1.5
+
+    cirx = x + math.floor(10 * (math.sin(math.radians(b))))
+    ciry = y - math.floor(10 * (math.cos(math.radians(b))))
+
+    return (cirx, ciry)
 def drawPoints(img, points):
     # Colour code in this case is BGR
     for point in points:
         cv2.circle(img, point, 2, (0, 0, 255), cv2.FILLED)
-    cv2.circle(img, Circlearrow(x, y, turn), 2, (0, 255, 0), 3)
+    cv2.arrowedLine(img, point, Circlearrow(), (0, 255, 0), 3, 2)
     cv2.putText(img, f'({(points[-1][0] - 500) / 100},{(points[-1][1] - 500) / 100})m',
                (points[-1][0] + 10, points[-1][1] + 30), cv2.FONT_HERSHEY_PLAIN, 1,
                (255, 0, 255), 1)

@@ -6,9 +6,11 @@ me = tello.Tello()
 me.connect()                        #Connect to the tello. Make sure to connect device via wifi first.
 print(me.get_battery())             #Gets battery percent
 
-
+me.set_video_direction()
 #Streams image data from the tello camera
 me.streamon()
+
+
 
 while True:
     img = me.get_frame_read().frame

@@ -6,20 +6,19 @@ import numpy as np
 import math
 
 ##### PARAMETERS ######
-fspeed = 117 / 10  # Self determine speed in cm/s - 15cm/s
-aspeed = 10        # Angular speed in Rad/s
+fspeed = 100 / 10  # Self determine speed in cm/s
+aspeed = 10  # Angular speed in Rad/s
 interval = 0.15
 dInterval = fspeed * interval
 aInterval = aspeed * interval
 x, y = 500, 500
 a = 0
 b = 0
-yaw = 0
 cirx, ciry = 500, 500
 kb.init()
 me = tello.Tello()
-#me.connect()
-#print(me.get_battery())
+# me.connect()
+# print(me.get_battery())
 
 points = [(0, 0), (0, 0)]
 
@@ -28,28 +27,31 @@ def getKeyInput():
     lr, fb, ud, yv = 0, 0, 0, 0
     speed = 20
     aspeed = 20
-    global x, y, yaw, a, b, cirx, ciry
+    global x, y, a, b, cirx, ciry
     d = 0
 
     if kb.getKey("LEFT"):
         lr = -speed
         d = dInterval
-        a = 180
+        a = b + 3*math.pi / 2
+        sleep(0.005)
 
-    elif kb.getKey("RIGHT"):
+    if kb.getKey("RIGHT"):
         lr = speed
-        d = -dInterval
-        a = -180
+        d = dInterval
+        a = b + math.pi / 2
+        sleep(0.005)
 
     if kb.getKey("UP"):
         fb = speed
         d = dInterval
-        a = -90
+        sleep(0.005)
 
     elif kb.getKey("DOWN"):
-        fb = -speed
-        d = -dInterval
-        a = 270
+        fb = speed
+        d = dInterval
+        a = b + math.pi
+        sleep(0.005)
 
     if kb.getKey("w"):
         ud = speed
@@ -57,24 +59,28 @@ def getKeyInput():
         ud = -speed
 
     if kb.getKey("a"):
-        yv = -aspeed
-        yaw -= aInterval
+        dummy = 0
+        # Set the drone to turn 45 degrees left
+        #tello.rotate_clockwise(me, 45)
+
 
     elif kb.getKey("d"):
-        yv = aspeed
-        yaw += aInterval
+        dummy = 0
+        # Set the drone to turn 45 degrees right
+        #tello.rotate_clockwise(me, -45)
+
 
     if kb.getKey("q"):
         dummy = 1
-        #me.land()
+        # me.land()
 
     if kb.getKey("e"):
         dummy = 0
-        #me.takeoff()
+        # me.takeoff()
 
-    a += yaw
-    x += math.floor(d * math.cos(math.radians(a)))
-    y += math.floor(d * math.sin(math.radians(a)))
+    x += int(d * math.sin(a))
+    y -= int(d * math.cos(a))
+    a = b
     return [lr, fb, ud, yv, x, y]
 
 
@@ -82,23 +88,36 @@ def Circlearrow():
     global cirx, ciry, a, b
 
     if kb.getKey("a"):
-        b -= 1.5
+        b -= 2*math.pi/8
+        sleep(1)
 
     elif kb.getKey("d"):
-        b += 1.5
+        b += 2*math.pi/8
+        sleep(1)
 
-    cirx = x + math.floor(10 * (math.sin(math.radians(b))))
-    ciry = y - math.floor(10 * (math.cos(math.radians(b))))
+    while 2 * math.pi < b:
+        b = b - (2*math.pi)
 
-    return (cirx, ciry)
+    while b < -2 * math.pi:
+        b = b + (2 * math.pi)
+
+
+    cirx = x + int(15 * (math.sin(b)))
+    ciry = y - int(15 * (math.cos(b)))
+
+    print((a/(2*math.pi))*360, (b/(2*math.pi))*360)
+    return cirx, ciry
+
+
 def drawPoints(img, points):
     # Colour code in this case is BGR
     for point in points:
         cv2.circle(img, point, 2, (0, 0, 255), cv2.FILLED)
-    cv2.arrowedLine(img, point, Circlearrow(), (0, 255, 0), 3, 2)
+    cv2.arrowedLine(img, point, Circlearrow(), (0, 255, 0), 3, 6)
     cv2.putText(img, f'({(points[-1][0] - 500) / 100},{(points[-1][1] - 500) / 100})m',
-               (points[-1][0] + 10, points[-1][1] + 30), cv2.FONT_HERSHEY_PLAIN, 1,
-               (255, 0, 255), 1)
+                (points[-1][0] + 10, points[-1][1] + 30), cv2.FONT_HERSHEY_PLAIN, 1,
+                (255, 0, 255), 1)
+
 
 while True:
     vals = getKeyInput()

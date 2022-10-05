@@ -2,7 +2,7 @@ from djitellopy import tello
 import KeyboardModule as kb
 from time import sleep
 import cv2
-import multiprocessing
+
 
 kb.init()
 me = tello.Tello()

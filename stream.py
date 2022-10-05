@@ -17,7 +17,7 @@ with open(classFile, 'rt') as f:
 print(classNames)
 
 configPath = 'ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
-weightsPath = "frozen_inference_graph.pb"
+weightsPath = "saved_model.pb"
 
 net = cv2.dnn_DetectionModel(weightsPath, configPath)
 net.setInputSize(320, 320)
@@ -68,7 +68,7 @@ def getKeyInput():
 
 
 while True:
-     #success, img = cap.read()
+    #success, img = cap.read()
     vals = getKeyInput()
     me.send_rc_control(vals[0], vals[1], vals[2], vals[3])
     img = me.get_frame_read().frame

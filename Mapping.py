@@ -12,6 +12,7 @@ interval = 0.15
 dInterval = fspeed * interval
 aInterval = aspeed * interval
 x, y = 500, 500
+nextx, nexty = 500, 500
 a = 0
 b = 0
 cirx, ciry = 500, 500
@@ -32,26 +33,29 @@ def getKeyInput():
 
     if kb.getKey("LEFT"):
         lr = -speed
-        d = dInterval
         a = b + 3*math.pi / 2
-        sleep(0.005)
+        x = x + int(10 * (math.sin(a)))
+        y = y - int(10 * (math.cos(a)))
+        sleep(0.05)
 
     if kb.getKey("RIGHT"):
         lr = speed
-        d = dInterval
         a = b + math.pi / 2
-        sleep(0.005)
+        x = x + int(10 * (math.sin(a)))
+        y = y - int(10 * (math.cos(a)))
+        sleep(0.05)
 
     if kb.getKey("UP"):
         fb = speed
-        d = dInterval
-        sleep(0.005)
+        x = x + math.floor(10 * (math.sin(b)))
+        y = y - math.floor(10 * (math.cos(b)))
+        sleep(0.05)
 
     elif kb.getKey("DOWN"):
-        fb = speed
-        d = dInterval
-        a = b + math.pi
-        sleep(0.005)
+        fb = -speed
+        x = x - math.floor(10 * (math.sin(b)))
+        y = y + math.floor(10 * (math.cos(b)))
+        sleep(0.05)
 
     if kb.getKey("w"):
         ud = speed
@@ -63,12 +67,10 @@ def getKeyInput():
         # Set the drone to turn 45 degrees left
         #tello.rotate_clockwise(me, 45)
 
-
     elif kb.getKey("d"):
         dummy = 0
         # Set the drone to turn 45 degrees right
         #tello.rotate_clockwise(me, -45)
-
 
     if kb.getKey("q"):
         dummy = 1
@@ -78,22 +80,21 @@ def getKeyInput():
         dummy = 0
         # me.takeoff()
 
-    x += int(d * math.sin(a))
-    y -= int(d * math.cos(a))
     a = b
     return [lr, fb, ud, yv, x, y]
 
 
 def Circlearrow():
-    global cirx, ciry, a, b
+
+    global cirx, ciry, a, x, y, b, nextx, nexty
 
     if kb.getKey("a"):
-        b -= 2*math.pi/8
-        sleep(1)
+        b -= math.pi/36
+        sleep(0.004)
 
     elif kb.getKey("d"):
-        b += 2*math.pi/8
-        sleep(1)
+        b += math.pi/36
+        sleep(0.004)
 
     while 2 * math.pi < b:
         b = b - (2*math.pi)
@@ -101,11 +102,10 @@ def Circlearrow():
     while b < -2 * math.pi:
         b = b + (2 * math.pi)
 
+    cirx = x + math.floor(15 * (math.sin(b)))
+    ciry = y - math.floor(15 * (math.cos(b)))
 
-    cirx = x + int(15 * (math.sin(b)))
-    ciry = y - int(15 * (math.cos(b)))
-
-    print((a/(2*math.pi))*360, (b/(2*math.pi))*360)
+    #print((a/(2*math.pi))*360, (b/(2*math.pi))*360)
     return cirx, ciry
 
 

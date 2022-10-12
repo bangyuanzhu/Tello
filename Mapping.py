@@ -12,17 +12,17 @@ interval = 0.15
 dInterval = fspeed * interval
 aInterval = aspeed * interval
 x, y = 500, 500
-nextx, nexty = 500, 500
 a = 0
 b = 0
 cirx, ciry = 500, 500
+colourin = False
 kb.init()
 me = tello.Tello()
 # me.connect()
 # print(me.get_battery())
 
 points = [(0, 0), (0, 0)]
-
+spoints = [(0, 0)]
 
 def getKeyInput():
     lr, fb, ud, yv = 0, 0, 0, 0
@@ -36,26 +36,26 @@ def getKeyInput():
         a = b + 3*math.pi / 2
         x = x + int(10 * (math.sin(a)))
         y = y - int(10 * (math.cos(a)))
-        sleep(0.05)
+        sleep(0.08)
 
     if kb.getKey("RIGHT"):
         lr = speed
         a = b + math.pi / 2
         x = x + int(10 * (math.sin(a)))
         y = y - int(10 * (math.cos(a)))
-        sleep(0.05)
+        sleep(0.08)
 
     if kb.getKey("UP"):
         fb = speed
         x = x + math.floor(10 * (math.sin(b)))
         y = y - math.floor(10 * (math.cos(b)))
-        sleep(0.05)
+        sleep(0.08)
 
     elif kb.getKey("DOWN"):
         fb = -speed
         x = x - math.floor(10 * (math.sin(b)))
         y = y + math.floor(10 * (math.cos(b)))
-        sleep(0.05)
+        sleep(0.08)
 
     if kb.getKey("w"):
         ud = speed
@@ -86,15 +86,15 @@ def getKeyInput():
 
 def Circlearrow():
 
-    global cirx, ciry, a, x, y, b, nextx, nexty
+    global cirx, ciry, a, x, y, b
 
     if kb.getKey("a"):
         b -= math.pi/36
-        sleep(0.004)
+        sleep(0.03)
 
     elif kb.getKey("d"):
         b += math.pi/36
-        sleep(0.004)
+        sleep(0.03)
 
     while 2 * math.pi < b:
         b = b - (2*math.pi)
@@ -111,13 +111,30 @@ def Circlearrow():
 
 def drawPoints(img, points):
     # Colour code in this case is BGR
+
+    # Draws red dot at current location
     for point in points:
         cv2.circle(img, point, 2, (0, 0, 255), cv2.FILLED)
-    cv2.arrowedLine(img, point, Circlearrow(), (0, 255, 0), 3, 6)
+
+    # Locates point for end of pointing arrow
+    cv2.arrowedLine(img, point, Circlearrow(), (0, 255, 0), 3, 1)
+
+    # Annotates the current xy coordinates
     cv2.putText(img, f'({(points[-1][0] - 500) / 100},{(points[-1][1] - 500) / 100})m',
                 (points[-1][0] + 10, points[-1][1] + 30), cv2.FONT_HERSHEY_PLAIN, 1,
                 (255, 0, 255), 1)
 
+def scream(img, x, y):
+    global colourin
+
+    if kb.getKey("p"):
+        colourin = True
+        if spoints[-1][0] != x or points[-1][1] != y:
+            spoints.append((x, y))
+
+    if colourin:
+        for spoint in spoints:
+            cv2.circle(img, spoint, 6, (0, 255, 255), cv2.FILLED)
 
 while True:
     vals = getKeyInput()
@@ -126,5 +143,6 @@ while True:
     if points[-1][0] != vals[4] or points[-1][1] != vals[5]:
         points.append((vals[4], vals[5]))
     drawPoints(img, points)
+    scream(img, x, y)
     cv2.imshow("Output", img)
     cv2.waitKey(1)

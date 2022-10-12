@@ -1,12 +1,12 @@
 import pygame
 import json
 import math
+import time
 
 from djitellopy import Tello
 
 tello = Tello()
 tello.connect()
-
 
 """
 how many pixel = actual distance in cm
@@ -121,9 +121,10 @@ for index in range(len(path_dist_cm)):
 
 tello.takeoff()
 tello.move_up(100)
-for index in range(len(path_dist_px)):
+for index in range(len(dist_px)):
     tello.send_rc_control(0,0,0,path_angle[index])
     tello.send_rc_control(0,path_dist_px[index],0,0)
+    time.sleep(0.05)
 tello.land()
 
 

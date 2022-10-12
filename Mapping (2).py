@@ -1,12 +1,12 @@
 import pygame
 import json
 import math
-"""
+
 from djitellopy import Tello
 
 tello = Tello()
 tello.connect()
-"""
+
 
 """
 how many pixel = actual distance in cm
@@ -118,14 +118,14 @@ for index in range(len(path_dist_cm)):
         "dist_px": path_dist_px[index],
         "angle_deg": path_angle[index]
     })
-"""
+
 tello.takeoff()
 tello.move_up(100)
-for index in range(len(dist_py)):
-    tello.rotate_counter_clockwise(path_angle[index])
-    tello.move_forward(path_dist_px[index])
+for index in range(len(path_dist_px)):
+    tello.send_rc_control(0,0,0,path_angle[index])
+    tello.send_rc_control(0,path_dist_px[index],0,0)
 tello.land()
-"""
+
 
 # Save to JSON file.
 f = open('waypoint.json', 'w+')

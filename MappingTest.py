@@ -124,6 +124,12 @@ for index in range(len(path_dist_cm)):
 
 print('dist_cm: {}'.format(path_dist_cm[0]))
 print('dist_cm: {}'.format(path_dist_cm[1]))
+print(format(path_angle[0]))
+
+print('first px: {} '.format(path_dist_px[0]))
+print('sec px: {}'.format(path_dist_px[1]))
+print('first angle_deg: {}'.format(path_angle[0]))
+print('sec angle_deg: {}'.format(path_angle[1]))
 
 tello.takeoff()
 

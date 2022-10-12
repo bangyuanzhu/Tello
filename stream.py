@@ -16,7 +16,7 @@ with open(classFile, 'rt') as f:
     classNames = f.read().split('\n')
 print(classNames)
 
-configPath = 'ssd_efficientdet_d0_512x512_coco17_tpu-8.pbtxt'
+configPath = 'efficientdet-d0.pbtxt'
 weightsPath = "saved_model.pb"
 
 net = cv2.dnn_DetectionModel(weightsPath, configPath)

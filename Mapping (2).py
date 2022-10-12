@@ -121,13 +121,12 @@ for index in range(len(path_dist_cm)):
 """
 tello.takeoff()
 tello.move_up(100)
-for index in range(len(path_wp)):
+for index in range(len(dist_py)):
     tello.rotate_counter_clockwise(path_angle[index])
-    tello.move_forward(path_dist_cm[index])
+    tello.move_forward(path_dist_px[index])
 tello.land()
 """
-print(path_angle)
-print(path_dist_cm)
+
 # Save to JSON file.
 f = open('waypoint.json', 'w+')
 path_wp.pop(0)

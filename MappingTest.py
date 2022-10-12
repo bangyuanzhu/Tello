@@ -6,8 +6,8 @@ from djitellopy import tello
 from djitellopy import Tello
 
 
-'''tello = Tello()
-tello.connect()'''
+tello = Tello()
+tello.connect()
 
 """
 how many pixel = actual distance in cm
@@ -127,13 +127,13 @@ print('dist_cm: {}'.format(path_dist_cm[1]))
 
 tello.takeoff()
 
-tello.moveforward(format(path_dist_cm[0]))
+tello.moveforward(format(path_dist_px[0]))
 tello.rotate(format(path_angle[0]))
-tello.moveforward(format(path_dist_cm[1]))
+tello.moveforward(format(path_dist_px[1]))
 tello.rotate(format(path_angle[1]))
-tello.moveforward(format(path_dist_cm[2]))
+tello.moveforward(format(path_dist_px[2]))
 tello.rotate(format(path_angle[2]))
-tello.moveforward(format(path_dist_cm[3]))
+tello.moveforward(format(path_dist_px[3]))
 tello.rotate(format(path_angle[4]))
 
 tello.land()

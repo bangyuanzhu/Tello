@@ -6,7 +6,7 @@ import time
 from djitellopy import Tello
 
 tello = Tello()
-#tello.connect()
+tello.connect()
 
 """
 how many pixel = actual distance in cm
@@ -85,7 +85,7 @@ def TurnAngle(interval):
     if RIGHT == True:
         tello.send_rc_control(0, 0, 0, 40)
     elif LEFT == True:
-        tello.send_rc_control(0, 0, 0, -40)
+        tello.send_rc_control(0, 0, 0, 40)
     time.sleep(interval)
 
 #Main capturing mouse program.
@@ -119,7 +119,7 @@ path_dist_px = []
 path_angle = []
 for index in range(len(path_wp)):
     # Skip the first and second index.
-    if index > 1:
+    if index > 0:
         dist_cm, dist_px = get_dist_btw_pos(path_wp[index-1], path_wp[index])
         path_dist_cm.append(dist_cm)
         path_dist_px.append(dist_px)
@@ -135,34 +135,15 @@ print('dist_cm: {}'.format(path_dist_cm))
 print('dist_px: {}'.format(path_dist_px))
 print('dist_angle: {}'.format(path_angle))
 
-"""
-Save waypoints into JSON file.
-"""
-waypoints = []
-for index in range(len(path_dist_cm)):
-    waypoints.append({
-        "dist_cm": path_dist_cm[index],
-        "dist_px": path_dist_px[index],
-        "angle_deg": path_angle[index]
-    })
 
-"""
+
 tello.takeoff()
-time.sleep(2)
-for index in range(len(path_dist_cm)):
+
+for index in range(len(path_angle)):
+    MoveForward(path_dist_cm[index]/300)
     print(index)
     TurnAngle(path_angle[index]/25.71)
     print(path_angle)
-    MoveForward(path_dist_cm[index]/300)
-time.sleep(1)
-tello.land()
-"""
+MoveForward(path_dist_cm[len(path_angle)]/300)    
 
-# Save to JSON file.
-f = open('waypoint.json', 'w+')
-path_wp.pop(0)
-json.dump({
-    "wp": waypoints,
-    "pos": path_wp
-}, f, indent=4)
-f.close()
+tello.land()

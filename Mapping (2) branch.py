@@ -6,7 +6,7 @@ import time
 from djitellopy import Tello
 
 tello = Tello()
-#tello.connect()
+tello.connect()
 
 """
 how many pixel = actual distance in cm
@@ -18,8 +18,6 @@ pygame.init()
 screen = pygame.display.set_mode([720, 720])
 screen.fill((255, 255, 255))
 running = True
-RIGHT = False
-LEFT = False
 
 
 class Background(pygame.sprite.Sprite):
@@ -51,8 +49,7 @@ def get_angle_btw_line(pos0, pos1, posref):
     ay = posref[1] - pos0[1]
     bx = posref[0] - pos1[0]
     by = posref[1] - pos1[1]
-
-    global RIGHT, LEFT
+    RIGHT = True
 
     # Get dot product of pos0 and pos1.
     _dot = (ax * bx) + (ay * by)
@@ -64,28 +61,31 @@ def get_angle_btw_line(pos0, pos1, posref):
     crossdir = - ax * by + ay * bx
 
     if crossdir > 0:
-        angle =  (_rad * 180) / math.pi
+        angle = 180 - (_rad * 180) / math.pi
         RIGHT = True
-        LEFT = False
 
     elif crossdir < 0:
-        angle = 360 - (_rad * 180) / math.pi
+        angle = 180 - (_rad * 180) / math.pi
         RIGHT = False
-        LEFT = True
 
-    return int(angle)
+    return [int(angle), RIGHT]
 
 def MoveForward(interval):
     tello.send_rc_control(0, 50, 0, 0)
     time.sleep(interval)
 
-def TurnAngle(interval):
+def TurnAngle(interval, directionRIGHT):
     # angular speed at 100 is 64.25 degrees/s
-    global RIGHT, LEFT
-    if RIGHT == True:
+    if directionRIGHT == True:
         tello.send_rc_control(0, 0, 0, 40)
-    elif LEFT == True:
+        print("Right")
+        time.sleep(0.0001)
+
+    elif directionRIGHT == False:
         tello.send_rc_control(0, 0, 0, -40)
+        print("Left")
+        time.sleep(0.0001)
+
     time.sleep(interval)
 
 #Main capturing mouse program.
@@ -117,6 +117,8 @@ Compute the waypoints (distance and angle).
 path_dist_cm = []
 path_dist_px = []
 path_angle = []
+path_dir = []
+
 for index in range(len(path_wp)):
     # Skip the first and second index.
     if index > 1:
@@ -127,36 +129,40 @@ for index in range(len(path_wp)):
     # Skip the first and last index.
     if index > 0 and index < (len(path_wp) - 1):
         angle = get_angle_btw_line(path_wp[index-1], path_wp[index+1], path_wp[index])
-        path_angle.append(angle)
+        path_angle.append(angle[0])
+        path_dir.append(angle[1])
 
 # Print out the information.
 print('path_wp: {}'.format(path_wp))
 print('dist_cm: {}'.format(path_dist_cm))
 print('dist_px: {}'.format(path_dist_px))
 print('dist_angle: {}'.format(path_angle))
+print('dist_dir: {}'.format(path_dir))
 
 """
 Save waypoints into JSON file.
 """
+
 waypoints = []
 for index in range(len(path_dist_cm)):
     waypoints.append({
         "dist_cm": path_dist_cm[index],
         "dist_px": path_dist_px[index],
-        "angle_deg": path_angle[index]
+        "angle_deg": path_angle[index],
+        "angle_dir": path_dir[index]
     })
 
-"""
+
 tello.takeoff()
-time.sleep(2)
+time.sleep(0.5)
+
 for index in range(len(path_dist_cm)):
-    print(index)
-    TurnAngle(path_angle[index]/25.71)
-    print(path_angle)
     MoveForward(path_dist_cm[index]/300)
-time.sleep(1)
+    TurnAngle(path_angle[index]/25.71, path_dir[index])
+MoveForward(path_dist_cm[index]/300)
+time.sleep(0.5)
 tello.land()
-"""
+
 
 # Save to JSON file.
 f = open('waypoint.json', 'w+')

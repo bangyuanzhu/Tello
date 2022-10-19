@@ -6,7 +6,7 @@ import time
 from djitellopy import Tello
 
 tello = Tello()
-tello.connect()
+#tello.connect()
 
 """
 how many pixel = actual distance in cm
@@ -64,12 +64,12 @@ def get_angle_btw_line(pos0, pos1, posref):
     crossdir = - ax * by + ay * bx
 
     if crossdir > 0:
-        angle = 180 - (_rad * 180) / math.pi
+        angle =  (_rad * 180) / math.pi
         RIGHT = True
         LEFT = False
 
     elif crossdir < 0:
-        angle = 180 - (_rad * 180) / math.pi
+        angle = 360 - (_rad * 180) / math.pi
         RIGHT = False
         LEFT = True
 
@@ -146,7 +146,7 @@ for index in range(len(path_dist_cm)):
         "angle_deg": path_angle[index]
     })
 
-
+"""
 tello.takeoff()
 time.sleep(2)
 for index in range(len(path_dist_cm)):
@@ -156,7 +156,7 @@ for index in range(len(path_dist_cm)):
     MoveForward(path_dist_cm[index]/300)
 time.sleep(1)
 tello.land()
-
+"""
 
 # Save to JSON file.
 f = open('waypoint.json', 'w+')

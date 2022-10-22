@@ -3,7 +3,6 @@ from threading import Thread
 from djitellopy import Tello
 
 tello = Tello()
-
 tello.connect()
 
 keepRecording = True
@@ -23,6 +22,7 @@ def videoRecorder():
 
 # we need to run the recorder in a seperate thread, otherwise blocking options
 #  would prevent frames from getting added to the video
+
 recorder = Thread(target=videoRecorder)
 recorder.start()
 

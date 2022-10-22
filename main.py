@@ -9,13 +9,13 @@ nmsThres = 0.2
  #cap.set(4, 480)
 
 classNames = []
-classFile = 'coco.names'
+classFile = 'coco.names2'
 with open(classFile, 'rt') as f:
     classNames = f.read().split('\n')
 print(classNames)
 
 configPath = 'ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
-weightsPath = "saved_model.pb"
+weightsPath = "frozen_inference_graph.pb"
 
 net = cv2.dnn_DetectionModel(weightsPath, configPath)
 net.setInputSize(320, 320)

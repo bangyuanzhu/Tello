@@ -4,7 +4,7 @@ import math
 import time
 from djitellopy import Tello
 
-tello = Tello()
+me = Tello()
 MAP_SIZE_COEFF = 5.14
 
 class Background(pygame.sprite.Sprite):
@@ -58,18 +58,18 @@ def get_angle_btw_line(pos0, pos1, posref):
     return [int(angle), RIGHT]
 
 def MoveForward(interval):
-    tello.send_rc_control(0, 50, 0, 0)
+    me.send_rc_control(0, 50, 0, 0)
     time.sleep(interval)
 
 def TurnAngle(interval, directionRIGHT):
     # angular speed at 100 is 64.25 degrees/s
     if directionRIGHT == True:
-        tello.send_rc_control(0, 0, 0, 40)
+        me.send_rc_control(0, 0, 0, 40)
         print("Right")
         time.sleep(0.0001)
 
     elif directionRIGHT == False:
-        tello.send_rc_control(0, 0, 0, -40)
+        me.send_rc_control(0, 0, 0, -40)
         print("Left")
         time.sleep(0.0001)
 

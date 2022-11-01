@@ -1,19 +1,10 @@
-import pygame
-import json
 import math
+import cv2
 import time
 from djitellopy import Tello
 
 me = Tello()
 MAP_SIZE_COEFF = 5.14
-
-class Background(pygame.sprite.Sprite):
-    def __init__(self, image, location, scale):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(image)
-        self.image = pygame.transform.rotozoom(self.image, 0, scale)
-        self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = location
 
 
 def get_dist_btw_pos(pos0, pos1):
@@ -58,7 +49,9 @@ def get_angle_btw_line(pos0, pos1, posref):
     return [int(angle), RIGHT]
 
 def MoveForward(interval):
+
     me.send_rc_control(0, 50, 0, 0)
+
     time.sleep(interval)
 
 def TurnAngle(interval, directionRIGHT):
@@ -74,7 +67,3 @@ def TurnAngle(interval, directionRIGHT):
         time.sleep(0.0001)
 
     time.sleep(interval)
-
-
-
-

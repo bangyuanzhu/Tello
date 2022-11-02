@@ -13,45 +13,12 @@ me.connect()
 print(me.get_battery())
 flying = True
 
-def getKeyInput():
-    kb.init()
-    
-    lr, fb, ud, yv = 0, 0, 0, 0
-    speed = 40
-    if kb.getKey("LEFT"):
-        lr = -speed
-    elif kb.getKey("RIGHT"):
-        lr = speed
-
-    if kb.getKey("UP"):
-        fb = speed
-    elif kb.getKey("DOWN"):
-        fb = -speed
-
-    if kb.getKey("w"):
-        ud = speed
-    elif kb.getKey("s"):
-        ud = -speed
-
-    if kb.getKey("a"):
-        yv = -speed
-    elif kb.getKey("d"):
-        yv = speed
-
-    if kb.getKey("q"):
-        flying = False
-        me.land()
-
-    if kb.getKey("e"):
-        me.takeoff()
-
-    return [lr, fb, ud, yv]
-
-
 me.streamon()
 me.takeoff()
 
 def task2():
+    kb.init()
+    
     def getKeyInput():
         lr, fb, ud, yv = 0, 0, 0, 0
         speed = 40

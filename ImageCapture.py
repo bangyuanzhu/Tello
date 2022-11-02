@@ -1,6 +1,6 @@
 from djitellopy import tello
 import cv2
-
+import time
 
 me = tello.Tello()
 me.connect()                        #Connect to the tello. Make sure to connect device via wifi first.
